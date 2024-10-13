@@ -3,6 +3,7 @@ import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/widgets.dart';
+import 'package:zego/src/presentations/screens/chat/chat_screen.dart';
 
 class SearchScreen extends StatefulWidget {
   const SearchScreen({super.key});
@@ -19,7 +20,7 @@ class _SearchScreenState extends State<SearchScreen> {
     return Scaffold(
       body: SafeArea(
         child: Padding(
-          padding: const EdgeInsets.all(15.0),
+          padding: const EdgeInsets.all(10.0),
           child: Column(
             children: [
               TextFormField(
@@ -71,7 +72,20 @@ class _SearchScreenState extends State<SearchScreen> {
                               .contains(_searchController.text.toLowerCase());
                           if (isMatch) {
                             return ListTile(
-                              leading: Text(
+                              contentPadding: const EdgeInsets.all(0),
+                              leading: IconButton(
+                                onPressed: () {
+                                  //TODO: chat screen
+                                  Navigator.push(
+                                    context,
+                                    MaterialPageRoute(
+                                      builder: (context) => const ChatScreen(),
+                                    ),
+                                  );
+                                },
+                                icon: const Icon(Icons.chat),
+                              ),
+                              title: Text(
                                 snapshot.data!.docs[index]['name'],
                                 style: const TextStyle(
                                   fontSize: 16,

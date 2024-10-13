@@ -81,6 +81,40 @@ class _HomeScreenState extends State<HomeScreen> {
               ),
             ),
             _postWidget(),
+            //ToDo List For TimeLine
+            StreamBuilder<QuerySnapshot>(
+              stream: FirebaseFirestore.instance
+                  .collection('users')
+                  .doc(FirebaseAuth.instance.currentUser!.uid)
+                  .collection('timeline')
+                  .snapshots(),
+              builder: (context, snapshot) {
+                if (snapshot.connectionState == ConnectionState.waiting) {
+                  return const Center(
+                    child: CircularProgressIndicator(),
+                  );
+                }
+                if (snapshot.data!.docs.isEmpty) {
+                  return const Center(
+                    child: Text('No post found'),
+                  );
+                }
+                if (snapshot.hasError) {
+                  return Center(
+                    child: Text(snapshot.error.toString()),
+                  );
+                }
+                return ListView.builder(
+                  shrinkWrap: true,
+                  itemCount: snapshot.data!.docs.length,
+                  itemBuilder: (context, index) {
+                    DocumentSnapshot doc = snapshot.data!.docs[index];
+
+                    return _timeLineWidget(doc['postId']);
+                  },
+                );
+              },
+            ),
           ],
         ),
       ),
@@ -148,48 +182,63 @@ class _HomeScreenState extends State<HomeScreen> {
   }
 
   String imageUrl = '';
+  bool isLoading = false;
 
   Widget _imagePickerWidget() {
-    return Container(
-      padding: const EdgeInsets.all(12),
-      margin: const EdgeInsets.all(10),
-      decoration: BoxDecoration(
-        color: Colors.black38.withOpacity(0.1),
-        borderRadius: const BorderRadius.all(
-          Radius.circular(20),
-        ),
-      ),
-      child: Column(
-        mainAxisSize: MainAxisSize.min,
-        crossAxisAlignment: CrossAxisAlignment.center,
-        mainAxisAlignment: MainAxisAlignment.center,
-        children: [
-          if (imageUrl != '')
-            Image.file(
-              File(imageUrl),
-              height: 200,
-            ),
-          if (imageUrl == '')
-            IconButton(
-              icon: const Icon(
-                Icons.image,
-                size: 50,
+    return Stack(
+      alignment: Alignment.center,
+      children: [
+        if (isLoading)
+          const Center(
+            child: CircularProgressIndicator(),
+          ),
+        Center(
+          child: Container(
+            padding: const EdgeInsets.all(12),
+            margin: const EdgeInsets.all(10),
+            decoration: BoxDecoration(
+              color: Colors.black38.withOpacity(0.1),
+              borderRadius: const BorderRadius.all(
+                Radius.circular(20),
               ),
-              onPressed: () {},
             ),
-          const SizedBox(height: 10),
-          ElevatedButton(
-            onPressed: () {
-              _pickImageFromGallery();
-            },
-            child: const Text('Upload'),
-          )
-        ],
-      ),
+            child: Column(
+              mainAxisSize: MainAxisSize.min,
+              crossAxisAlignment: CrossAxisAlignment.center,
+              mainAxisAlignment: MainAxisAlignment.center,
+              children: [
+                if (imageUrl != '')
+                  Image.network(
+                    imageUrl,
+                    height: 200,
+                  ),
+                if (imageUrl == '')
+                  IconButton(
+                    icon: const Icon(
+                      Icons.image,
+                      size: 50,
+                    ),
+                    onPressed: () {},
+                  ),
+                const SizedBox(height: 10),
+                ElevatedButton(
+                  onPressed: () {
+                    _pickImageFromGallery();
+                  },
+                  child: const Text('Upload'),
+                )
+              ],
+            ),
+          ),
+        ),
+      ],
     );
   }
 
   void _pickImageFromGallery() {
+    setState(() {
+      isLoading = true;
+    });
     ImagePicker().pickImage(source: ImageSource.gallery).then((value) {
       if (value != null) {
         //upload to firebase storage
@@ -201,6 +250,7 @@ class _HomeScreenState extends State<HomeScreen> {
           value.ref.getDownloadURL().then((value) {
             setState(() {
               imageUrl = value;
+              isLoading = false;
             });
           });
         });
@@ -241,5 +291,79 @@ class _HomeScreenState extends State<HomeScreen> {
         SnackBar(content: Text(error.toString())),
       );
     });
+  }
+
+  Widget _timeLineWidget(String data) {
+    return StreamBuilder(
+      stream:
+          FirebaseFirestore.instance.collection('posts').doc(data).snapshots(),
+      builder: (context, snapshot) {
+        if (snapshot.hasError) {
+          return Center(
+            child: Text(snapshot.error.toString()),
+          );
+        }
+        if (snapshot.connectionState == ConnectionState.waiting) {
+          return const Center(
+            child: CircularProgressIndicator(),
+          );
+        }
+        if (!snapshot.hasData) {
+          return const Center(
+            child: Text('No post found'),
+          );
+        }
+        if (snapshot.data!.data() == null) {
+          return const Center(
+            child: Text('No post found'),
+          );
+        }
+        return Container(
+          padding: const EdgeInsets.all(10),
+          margin: const EdgeInsets.all(10),
+          decoration: BoxDecoration(
+            color: Colors.indigo.shade50,
+            borderRadius: const BorderRadius.all(
+              Radius.circular(12),
+            ),
+          ),
+          child: Column(
+            crossAxisAlignment: CrossAxisAlignment.start,
+            mainAxisAlignment: MainAxisAlignment.start,
+            children: [
+              if (snapshot.data!.data()!['type'] == 'image')
+                Text(
+                  snapshot.data!.data()!['brefForImage'],
+                  style: const TextStyle(
+                    fontSize: 16,
+                    fontWeight: FontWeight.bold,
+                    color: Colors.black87,
+                  ),
+                ),
+              if (snapshot.data!.data()!['type'] == 'image')
+                const SizedBox(height: 20),
+              if (snapshot.data!.data()!['type'] == 'image')
+                Center(
+                  child: Image.network(snapshot.data!.data()!['content'],
+                      height: 200, errorBuilder: (context, error, stackTrace) {
+                    return const Center(
+                      child: Text('No image found'),
+                    );
+                  }),
+                ),
+              if (snapshot.data!.data()!['type'] == 'text')
+                Text(
+                  snapshot.data!.data()!['content'],
+                  style: const TextStyle(
+                    fontSize: 16,
+                    fontWeight: FontWeight.bold,
+                    color: Colors.black87,
+                  ),
+                ),
+            ],
+          ),
+        );
+      },
+    );
   }
 }

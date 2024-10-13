@@ -14,7 +14,7 @@ class _HomeScreenState extends State<HomeScreen> {
     return Scaffold(
       appBar: AppBar(
         leading: Container(
-          padding: const EdgeInsets.all(2.0),
+          padding: const EdgeInsets.all(4.0),
           margin: const EdgeInsets.all(6.0),
           decoration: const BoxDecoration(
             shape: BoxShape.circle,

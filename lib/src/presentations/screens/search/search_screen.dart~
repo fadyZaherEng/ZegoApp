@@ -79,11 +79,11 @@ class _SearchScreenState extends State<SearchScreen> {
                                   color: Colors.black87,
                                 ),
                               ),
-                              trailing: StreamBuilder<DocumentSnapshot>(
-                                stream: doc.reference
+                              trailing: FutureBuilder(
+                                future: doc.reference
                                     .collection("followers")
                                     .doc(FirebaseAuth.instance.currentUser!.uid)
-                                    .snapshots(),
+                                    .get(),
                                 builder: (context, snapshot) {
                                   if (snapshot.hasData) {
                                     if (snapshot.data?.exists ?? false) {

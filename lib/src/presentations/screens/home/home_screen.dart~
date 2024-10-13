@@ -347,7 +347,7 @@ class _HomeScreenState extends State<HomeScreen> {
                   child: AspectRatio(
                     aspectRatio: 1 / 1,
                     child: Image.network(snapshot.data!.data()!['content'],
-                        height: 120, errorBuilder: (context, error, stackTrace) {
+                        height: 150, errorBuilder: (context, error, stackTrace) {
                       return const Center(
                         child: Text('No image found'),
                       );

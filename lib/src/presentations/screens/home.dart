@@ -1,12 +1,9 @@
-// Dart imports:
-
-// Flutter imports:
 import 'package:flutter/material.dart';
 import 'package:zego/src/presentations/screens/convernce_video_page.dart';
 
 class HomePage extends StatefulWidget {
   final String userId;
-  const HomePage({Key? key, required this.userId}) : super(key: key);
+  const HomePage({super.key, required this.userId});
 
   @override
   State<StatefulWidget> createState() => _HomePageState();
@@ -16,7 +13,7 @@ class _HomePageState extends State<HomePage> {
   final GlobalKey<ScaffoldState> _scaffoldKey = GlobalKey<ScaffoldState>();
 
   /// Users who use the same conferenceID can in the same conference.
-  var conferenceDTextCtrl = TextEditingController(text: 'video_conference_id');
+  var conferenceDTextCtrl = TextEditingController();
 
   @override
   Widget build(BuildContext context) {
@@ -64,7 +61,7 @@ class _HomePageState extends State<HomePage> {
                 onPressed: () {
                   _scaffoldKey.currentState?.openEndDrawer();
                 },
-                icon: Icon(Icons.settings),
+                icon: const Icon(Icons.settings),
               ),
             ),
           ],

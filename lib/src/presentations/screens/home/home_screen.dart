@@ -1,8 +1,8 @@
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
-import 'package:zego/src/presentations/screens/chat/chat_screen.dart';
 import 'package:zego/src/presentations/screens/home/widgets/home_content_widget.dart';
 import 'package:zego/src/presentations/screens/live/live_screen.dart';
+import 'package:zego/src/presentations/screens/my_chats/my_chats_screen.dart';
 import 'package:zego/src/presentations/screens/search/search_screen.dart';
 import 'package:zego/src/presentations/screens/sing_in/sign_in_screen.dart';
 
@@ -18,7 +18,7 @@ class _HomeScreenState extends State<HomeScreen> {
 
   final List<Widget> _screens = [
     const HomeContentWidget(),
-    const ChatScreen(),
+    const OnBoardChatScreen(),
     const LiveScreen(),
   ];
 

@@ -1,5 +1,9 @@
+import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
+import 'package:zego/src/di/data_layer_injector.dart';
+import 'package:zego/src/domain/entities/user_model.dart';
+import 'package:zego/src/domain/usecase/set_user_use_case.dart';
 import 'package:zego/src/presentations/screens/home/home_screen.dart';
 import 'package:zego/src/presentations/screens/sign_up/sign_up_screen.dart';
 
@@ -86,7 +90,7 @@ class _SignInScreenState extends State<SignInScreen> {
                       Colors.purple,
                     ),
                   ),
-                  onPressed: ()  {
+                  onPressed: () {
                     bool isValid = true;
                     if (emailController.text.isEmpty ||
                         !RegExp(r'^[\w-\.]+@([\w-]+\.)+[\w-]{2,4}$')
@@ -101,26 +105,38 @@ class _SignInScreenState extends State<SignInScreen> {
                     }
 
                     if (isValid) {
-                    FirebaseAuth.instance.signInWithEmailAndPassword(
-                      email: emailController.text,
-                      password: passwordController.text,
-                    ).then((UserCredential userCredential) {
-                      ScaffoldMessenger.of(context).showSnackBar(
-                        const SnackBar(
-                          content: Text('Sign In Successful'),
-                        ),
-                      );
-                      Navigator.pushReplacement(
-                        context,
-                        MaterialPageRoute(
-                          builder: (context) => const HomeScreen(),
-                        ),
-                      );
-                    }).catchError((error) {
-                      ScaffoldMessenger.of(context).showSnackBar(
-                        SnackBar(content: Text(error.toString())),
-                      );
-                    });
+                      FirebaseAuth.instance
+                          .signInWithEmailAndPassword(
+                        email: emailController.text,
+                        password: passwordController.text,
+                      )
+                          .then((UserCredential userCredential) async {
+                        UserModel userModel = UserModel.fromJson(
+                            (await FirebaseFirestore.instance
+                                        .collection('users')
+                                        .doc(userCredential.user!.uid)
+                                        .get())
+                                    .data() ??
+                                {});
+                        SetUserUseCase(injector())(userModel);
+                        ScaffoldMessenger.of(context).showSnackBar(
+                          const SnackBar(
+                            content: Text('Sign In Successful'),
+                          ),
+                        );
+                        Navigator.pushReplacement(
+                          context,
+                          MaterialPageRoute(
+                            builder: (context) => const HomeScreen(),
+                          ),
+                        );
+                      }).catchError((error) {
+                        if (mounted) {
+                          ScaffoldMessenger.of(context).showSnackBar(
+                            SnackBar(content: Text(error.toString())),
+                          );
+                        }
+                      });
                     }
                     setState(() {});
                   },
@@ -147,11 +163,14 @@ class _SignInScreenState extends State<SignInScreen> {
                           ),
                         );
                       },
-                      child: const Text('Sign Up',style: TextStyle(
-                        color: Colors.black,
-                        fontWeight: FontWeight.bold,
-                        fontSize: 14,
-                      ),),
+                      child: const Text(
+                        'Sign Up',
+                        style: TextStyle(
+                          color: Colors.black,
+                          fontWeight: FontWeight.bold,
+                          fontSize: 14,
+                        ),
+                      ),
                     ),
                   ],
                 ),

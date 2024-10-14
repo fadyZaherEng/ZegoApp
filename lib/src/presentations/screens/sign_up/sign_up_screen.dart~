@@ -1,8 +1,8 @@
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
-import 'package:zego/domain/entity/user_model.dart';
-import 'package:zego/screens/sing_in/sign_in_screen.dart';
+import 'package:zego/src/domain/entities/user_model.dart';
+import 'package:zego/src/presentations/screens/sing_in/sign_in_screen.dart';
 
 class SignUpScreen extends StatefulWidget {
   const SignUpScreen({super.key});
@@ -205,14 +205,13 @@ class _SignUpScreenState extends State<SignUpScreen> {
       name: userNameController.text,
       email: emailController.text,
       uid: userCredential.user!.uid,
-      createdAt: DateTime.now(),
     );
 
     if (userCredential.user != null) {
       FirebaseFirestore.instance
           .collection('users')
           .doc(userCredential.user!.uid)
-          .set(userModel.toMap());
+          .set(userModel.toJson());
     }
   }
 }

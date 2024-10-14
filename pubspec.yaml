@@ -40,6 +40,40 @@ dependencies:
   cloud_firestore:
   image_picker:
   firebase_storage:
+  equatable:
+  get_it:
+  bloc:
+  flutter_bloc:
+  shared_preferences:
+  dio:
+  chuck_interceptor:
+  pretty_dio_logger:
+  chucker_flutter:
+  uuid:
+  loading_animation_widget:
+  emoji_picker_flutter:
+  audioplayers:
+  audio_wave:
+  animate_do:
+  audio_waveforms:
+  video_player:
+  path_provider:
+  fluttertoast:
+  permission_handler:
+  audio_session:
+  svg_flutter:
+  device_info_plus:
+  skeletons:
+  date_format:
+  grouped_list:
+  google_fonts:
+  cached_network_image:
+  swipe_to:
+  flutter_sound_record:
+  timeago:
+  flutter_image_compress:
+  image_cropper:
+
 
 dev_dependencies:
   flutter_test:

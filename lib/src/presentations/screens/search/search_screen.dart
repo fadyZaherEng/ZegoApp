@@ -1,9 +1,7 @@
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:firebase_auth/firebase_auth.dart';
-import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
-import 'package:flutter/widgets.dart';
-import 'package:zego/src/presentations/screens/chat/chat_screen.dart';
+import 'package:zego/src/presentations/screens/chats/chat_screen.dart';
 
 class SearchScreen extends StatefulWidget {
   const SearchScreen({super.key});
@@ -69,7 +67,8 @@ class _SearchScreenState extends State<SearchScreen> {
                           bool isMatch = snapshot.data!.docs[index]['name']
                               .toString()
                               .toLowerCase()
-                              .contains(_searchController.text.toLowerCase());
+                              .contains(_searchController.text.toLowerCase())&&
+                              snapshot.data!.docs[index]['uid']!=FirebaseAuth.instance.currentUser!.uid;
                           if (isMatch) {
                             return ListTile(
                               contentPadding: const EdgeInsets.all(0),
@@ -79,7 +78,12 @@ class _SearchScreenState extends State<SearchScreen> {
                                   Navigator.push(
                                     context,
                                     MaterialPageRoute(
-                                      builder: (context) => const ChatScreen(),
+                                      builder: (context) => ChatScreen(
+                                        friendId: doc["uid"],
+                                        friendName: doc["name"],
+                                        friendImage: doc["image"]??"",
+                                        groupId: "",
+                                      ),
                                     ),
                                   );
                                 },

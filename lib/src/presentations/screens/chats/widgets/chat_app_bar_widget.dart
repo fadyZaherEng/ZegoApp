@@ -4,6 +4,7 @@ import 'package:google_fonts/google_fonts.dart';
 import 'package:timeago/timeago.dart' as timeago;
 import 'package:zego/src/config/theme/color_schemes.dart';
 import 'package:zego/src/domain/entities/user_model.dart';
+import 'package:zego/src/presentations/screens/home.dart';
 import 'package:zego/src/presentations/widgets/user_image_widget.dart';
 
 class ChatAppBarWidget extends StatelessWidget {
@@ -65,7 +66,8 @@ class ChatAppBarWidget extends StatelessWidget {
                               ? "Online"
                               : timeago.format(
                                   DateTime.fromMillisecondsSinceEpoch(
-                                      int.parse(user.lastSeen)),),
+                                      int.parse(user.lastSeen)),
+                                ),
                           style: GoogleFonts.openSans(
                             fontSize: 12,
                             fontWeight: FontWeight.normal,
@@ -89,6 +91,18 @@ class ChatAppBarWidget extends StatelessWidget {
                       color: Theme.of(context).iconTheme.color,
                       // textDirection: TextDirection.rtl,
                     )),
+                //icon video call
+                IconButton(
+                    onPressed: () {
+                      //TODO: navigate to video call
+                      Navigator.push(
+                        context,
+                        MaterialPageRoute(
+                          builder: (context) =>  HomePage(userId: friendId,),
+                        ),
+                      );
+                    },
+                    icon: const Icon(Icons.video_call)),
               ],
             ),
           );
@@ -99,7 +113,7 @@ class ChatAppBarWidget extends StatelessWidget {
     );
   }
 
- Stream _getUserStream({required String friendId}) {
+  Stream _getUserStream({required String friendId}) {
     try {
       return FirebaseFirestore.instance
           .collection("users")

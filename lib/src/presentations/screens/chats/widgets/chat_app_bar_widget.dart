@@ -17,7 +17,6 @@ class ChatAppBarWidget extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    print("friendId: $friendId");
     return StreamBuilder(
       stream: _getUserStream(friendId: friendId),
       builder: (context, AsyncSnapshot snapshot) {
